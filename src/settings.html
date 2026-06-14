@@ -234,6 +234,15 @@
       <div class="help" data-i18n="settings.accountHelp">Supprime les tokens locaux. Le prochain import demandera à nouveau l'autorisation Google.</div>
     </div>
 
+    <div class="section">
+      <label data-i18n="settings.updates">Mises à jour</label>
+      <div class="row">
+        <button id="check-updates" data-i18n="settings.checkUpdates">Vérifier les mises à jour</button>
+        <span id="update-status" class="help" style="margin-top: 0;"></span>
+      </div>
+      <div class="help" data-i18n="settings.updatesHelp">Popdoc vérifie discrètement les mises à jour au lancement et les installe à la fermeture, sans interrompre l'ouverture de tes fichiers.</div>
+    </div>
+
     <div class="meta">
       <span id="version">Popdoc</span>
       <button id="close" data-i18n="settings.close">Fermer</button>
@@ -250,6 +259,8 @@
     const $save = document.getElementById('save');
     const $language = document.getElementById('language');
     const $signout = document.getElementById('signout');
+    const $checkUpdates = document.getElementById('check-updates');
+    const $updateStatus = document.getElementById('update-status');
     const $close = document.getElementById('close');
     const $version = document.getElementById('version');
     const $toast = document.getElementById('toast');
@@ -316,6 +327,25 @@
         toast(t(uiLang, 'settings.signedOut'));
       } catch (e) {
         toast(t(uiLang, 'settings.errorPrefix') + e);
+      }
+    });
+
+    $checkUpdates.addEventListener('click', async () => {
+      $checkUpdates.disabled = true;
+      $updateStatus.textContent = t(uiLang, 'settings.checking');
+      try {
+        const res = await invoke('check_for_updates');
+        if (res.status === 'downloaded') {
+          $updateStatus.textContent = t(uiLang, 'settings.updateDownloaded').replace('{v}', res.version);
+        } else if (res.status === 'upToDate' || res.status === 'skipped') {
+          $updateStatus.textContent = t(uiLang, 'settings.upToDate');
+        } else {
+          $updateStatus.textContent = t(uiLang, 'settings.updateError');
+        }
+      } catch (e) {
+        $updateStatus.textContent = t(uiLang, 'settings.updateError');
+      } finally {
+        $checkUpdates.disabled = false;
       }
     });
 

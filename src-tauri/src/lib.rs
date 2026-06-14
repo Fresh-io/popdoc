@@ -7,6 +7,7 @@ mod mime_map;
 mod oauth;
 mod settings;
 mod token_store;
+mod updater;
 
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -21,10 +22,15 @@ use crate::i18n::{t, Key, Lang};
 use crate::mime_map::{doc_type_from_google_mime, drive_url, mapping_for_file};
 
 #[derive(Default)]
-struct AppState {
+pub(crate) struct AppState {
     queue: Mutex<Vec<PathBuf>>,
     processing: Mutex<bool>,
     received_file: AtomicBool,
+    /// An update downloaded in the background, parked for install-on-quit.
+    pub(crate) pending_update: std::sync::Mutex<Option<updater::PendingUpdate>>,
+    /// True while a background update download is in flight, so the quit path
+    /// can wait briefly for it to finish before installing.
+    pub(crate) update_downloading: AtomicBool,
 }
 
 fn notify(app: &AppHandle, title: &str, body: &str) {
@@ -318,13 +324,14 @@ async fn drain_queue(app: AppHandle) {
     let q = state.queue.lock().await;
     if q.is_empty() {
         let app_clone = app.clone();
-        std::thread::spawn(move || {
-            std::thread::sleep(std::time::Duration::from_millis(500));
+        tauri::async_runtime::spawn(async move {
+            tokio::time::sleep(std::time::Duration::from_millis(500)).await;
             let has_visible_window = app_clone
                 .webview_windows()
                 .values()
                 .any(|w| w.label() == "settings" && w.is_visible().unwrap_or(false));
             if !has_visible_window {
+                updater::install_pending(&app_clone).await;
                 app_clone.exit(0);
             }
         });
@@ -394,6 +401,13 @@ fn sign_out() -> Result<(), String> {
     oauth::clear_tokens().map_err(|e| e.to_string())
 }
 
+/// Manual "Check for updates" from the Settings window. Bypasses the throttle;
+/// a found update is downloaded and applied when the app next quits.
+#[tauri::command]
+async fn check_for_updates(app: AppHandle) -> updater::CheckResult {
+    updater::check(&app, true).await
+}
+
 fn open_settings_window(app: &AppHandle) {
     if let Some(w) = app.get_webview_window("settings") {
         let _ = w.set_focus();
@@ -422,6 +436,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
             let paths = paths_from_argv(&argv);
             if paths.is_empty() {
@@ -431,9 +446,18 @@ pub fn run() {
             }
         }))
         .manage(state)
-        .invoke_handler(tauri::generate_handler![get_settings, set_drive_folder, set_language, sign_out])
+        .invoke_handler(tauri::generate_handler![
+            get_settings,
+            set_drive_folder,
+            set_language,
+            sign_out,
+            check_for_updates
+        ])
         .setup(|app| {
             let handle = app.handle().clone();
+            // Silent, throttled update check in parallel with file processing.
+            // Never blocks opening the user's file; applies on quit.
+            updater::spawn_launch_check(&handle);
             let argv: Vec<String> = std::env::args().collect();
             let initial = paths_from_argv(&argv);
             if !initial.is_empty() {
@@ -498,9 +522,13 @@ pub fn run() {
                 let state = app_clone.state::<Arc<AppState>>().inner().clone();
                 let h2 = app_clone.clone();
                 tauri::async_runtime::spawn(async move {
-                    let q = state.queue.lock().await;
-                    let p = state.processing.lock().await;
-                    if q.is_empty() && !*p && !any_window_open {
+                    let should_exit = {
+                        let q = state.queue.lock().await;
+                        let p = state.processing.lock().await;
+                        q.is_empty() && !*p && !any_window_open
+                    };
+                    if should_exit {
+                        updater::install_pending(&h2).await;
                         h2.exit(0);
                     }
                 });

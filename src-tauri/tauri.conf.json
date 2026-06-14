@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Popdoc",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "identifier": "io.popdoc.app",
   "build": {
     "frontendDist": "../src"
@@ -14,8 +14,17 @@
       "csp": null
     }
   },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://github.com/Fresh-io/popdoc/releases/latest/download/latest.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDcwQUNFQ0FERDgxNUZDOTkKUldTWi9CWFlyZXlzY000d3k0YXpjeDgvWnJHaE5VWnc0YnNseC9NUmpuY3kzR3dlS0MrM3U1emwK"
+    }
+  },
   "bundle": {
     "active": true,
+    "createUpdaterArtifacts": true,
     "targets": ["app", "dmg"],
     "category": "public.app-category.productivity",
     "shortDescription": "Open Office files in Google Docs",

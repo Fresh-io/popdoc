@@ -29,6 +29,14 @@
       "settings.signoutConfirm":
         "Se déconnecter de Google ? Tu devras réautoriser au prochain import.",
       "settings.signedOut": "Déconnecté",
+      "settings.updates": "Mises à jour",
+      "settings.checkUpdates": "Vérifier les mises à jour",
+      "settings.checking": "Vérification…",
+      "settings.upToDate": "Popdoc est à jour.",
+      "settings.updateDownloaded": "Mise à jour {v} prête — elle s'installera à la fermeture.",
+      "settings.updateError": "Échec de la vérification. Réessaie plus tard.",
+      "settings.updatesHelp":
+        "Popdoc vérifie discrètement les mises à jour au lancement et les installe à la fermeture, sans interrompre l'ouverture de tes fichiers.",
       "settings.version": "Version",
       "progress.importing": "Import en cours…",
       "progress.opening": "Ouverture dans Google Docs…",
@@ -53,6 +61,14 @@
       "settings.signoutConfirm":
         "Sign out of Google? You'll need to authorize again on the next import.",
       "settings.signedOut": "Signed out",
+      "settings.updates": "Updates",
+      "settings.checkUpdates": "Check for updates",
+      "settings.checking": "Checking…",
+      "settings.upToDate": "Popdoc is up to date.",
+      "settings.updateDownloaded": "Update {v} ready — it will install on quit.",
+      "settings.updateError": "Check failed. Try again later.",
+      "settings.updatesHelp":
+        "Popdoc quietly checks for updates at launch and installs them on quit, without interrupting opening your files.",
       "settings.version": "Version",
       "progress.importing": "Importing…",
       "progress.opening": "Opening in Google Docs…",
@@ -77,6 +93,14 @@
       "settings.signoutConfirm":
         "¿Cerrar sesión de Google? Tendrás que volver a autorizar en la próxima importación.",
       "settings.signedOut": "Sesión cerrada",
+      "settings.updates": "Actualizaciones",
+      "settings.checkUpdates": "Buscar actualizaciones",
+      "settings.checking": "Comprobando…",
+      "settings.upToDate": "Popdoc está actualizado.",
+      "settings.updateDownloaded": "Actualización {v} lista — se instalará al cerrar.",
+      "settings.updateError": "Error al comprobar. Inténtalo más tarde.",
+      "settings.updatesHelp":
+        "Popdoc busca actualizaciones discretamente al iniciar y las instala al cerrar, sin interrumpir la apertura de tus archivos.",
       "settings.version": "Versión",
       "progress.importing": "Importando…",
       "progress.opening": "Abriendo en Google Docs…",

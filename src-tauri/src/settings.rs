@@ -14,6 +14,10 @@ pub struct Settings {
     /// system locale" (the default).
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub language: Option<String>,
+    /// Unix timestamp (seconds) of the last *background* update check. Used to
+    /// throttle the silent launch check; the manual button ignores it.
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    pub last_update_check: Option<u64>,
 }
 
 impl Default for Settings {
@@ -22,6 +26,7 @@ impl Default for Settings {
             drive_folder_name: DEFAULT_DRIVE_FOLDER.to_string(),
             folder_id: None,
             language: None,
+            last_update_check: None,
         }
     }
 }
@@ -89,6 +94,18 @@ pub fn set_language(code: &str) -> Result<()> {
     } else {
         Some(trimmed.to_string())
     };
+    save(&s)
+}
+
+/// Unix timestamp of the last background update check (0 if never).
+pub fn last_update_check() -> Option<u64> {
+    load().last_update_check
+}
+
+/// Record that a background update check just ran.
+pub fn set_last_update_check(ts: u64) -> Result<()> {
+    let mut s = load();
+    s.last_update_check = Some(ts);
     save(&s)
 }
 
