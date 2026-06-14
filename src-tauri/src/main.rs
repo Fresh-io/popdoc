@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    gdoc_launcher_lib::run()
+    popdoc_lib::run()
 }

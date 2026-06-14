@@ -11,3 +11,6 @@ src-tauri/target/
 # Node
 node_modules/
 dist/
+
+# Maintainer notes — kept local, not part of the public repo
+CLAUDE.md
