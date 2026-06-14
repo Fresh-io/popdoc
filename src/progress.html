@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Popdoc</title>
+  <style>
+    /* ===== Popdoc — tokens (paire adaptative WCAG) ===== */
+    :root {
+      color-scheme: light dark;
+      --brand: light-dark(#0E8C75, #2DD4BF);
+      --bg-card: light-dark(rgba(250, 250, 248, 0.94), rgba(20, 24, 29, 0.94));
+      --ink: light-dark(#14181D, #F4F6F5);
+      --muted: light-dark(#4D5560, #A8B2BC);
+      --line: light-dark(rgba(20, 24, 29, 0.10), rgba(244, 246, 245, 0.10));
+      --track: light-dark(rgba(14, 140, 117, 0.14), rgba(45, 212, 191, 0.16));
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @font-face {
+      font-family: 'Outfit';
+      src: url('assets/fonts/outfit-latin-wght-normal.woff2') format('woff2-variations');
+      font-weight: 100 900;
+      font-display: swap;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      overflow: hidden;
+      -webkit-user-select: none;
+      user-select: none;
+      cursor: default;
+    }
+    body {
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--ink);
+    }
+
+    /* ===== carte flottante ===== */
+    .card {
+      position: fixed;
+      inset: 6px;
+      background: var(--bg-card);
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      backdrop-filter: saturate(160%) blur(28px);
+      -webkit-backdrop-filter: saturate(160%) blur(28px);
+      box-shadow: 0 8px 28px -10px rgba(11, 107, 90, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 22px 18px 18px;
+      opacity: 0;
+      transform: scale(0.96) translateY(5px);
+      animation: fadeIn 240ms var(--ease-out) forwards;
+    }
+    body.closing .card { animation: fadeOut 200ms ease-in forwards; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.96) translateY(5px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; transform: scale(1) translateY(0); }
+      to   { opacity: 0; transform: scale(0.97) translateY(3px); }
+    }
+
+    /* ===== mascotte (SVG inline, currentColor) ===== */
+    .mascot { width: 62px; height: 62px; flex-shrink: 0; color: var(--brand); position: relative; }
+    .mascot svg { width: 62px; height: 62px; display: none; position: absolute; inset: 0; }
+
+    /* état par défaut : yeux qui lisent */
+    .mascot .m-busy { display: block; }
+    /* fallback statique si reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      .mascot .m-busy { display: none; }
+      .mascot .m-still { display: block; }
+      body.done .mascot .m-still { display: none; }
+    }
+    body.done .mascot .m-busy,
+    body.error .mascot .m-busy,
+    body.done .mascot .m-still { display: none; }
+    body.done .mascot .m-joie { display: block; }
+    body.error .mascot .m-joie { display: none; }
+    body.error .mascot .m-triste { display: block; }
+
+    @media (prefers-reduced-motion: no-preference) {
+      body.done .mascot { animation: pop 480ms var(--ease-out); }
+      @keyframes pop {
+        0% { transform: scale(1); }
+        38% { transform: scale(1.14) translateY(-3px); }
+        100% { transform: scale(1); }
+      }
+    }
+
+    /* ===== textes ===== */
+    .col { display: flex; flex-direction: column; gap: 7px; min-width: 0; flex: 1; }
+    .label {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    body.done .label { color: var(--brand); }
+    .filename {
+      font-family: ui-monospace, 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* ===== barre de progression ===== */
+    .track {
+      height: 5px;
+      border-radius: 999px;
+      background: var(--track);
+      overflow: hidden;
+      position: relative;
+    }
+    .track::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      width: 42%;
+      border-radius: inherit;
+      background: var(--brand);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .track::before { animation: slide 1.4s var(--ease-out) infinite; }
+      @keyframes slide {
+        from { transform: translateX(-110%); }
+        to   { transform: translateX(360%); }
+      }
+    }
+    body.done .track::before { animation: none; width: 100%; transition: width 300ms var(--ease-out); }
+    body.error .track { opacity: 0; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="mascot" aria-hidden="true">
+      <!-- occupé : les yeux lisent (balayage gauche-droite) -->
+      <svg class="m-busy" viewBox="0 0 1024 1024">
+        <defs>
+          <mask id="pd-busy">
+            <rect width="1024" height="1024" fill="#fff"/>
+            <g fill="#000">
+              <rect x="422" y="448" width="44" height="96" rx="22"/>
+              <rect x="558" y="448" width="44" height="96" rx="22"/>
+              <animateTransform attributeName="transform" type="translate"
+                values="0 0; 26 0; 26 0; -26 0; -26 0; 0 0"
+                keyTimes="0; 0.18; 0.36; 0.58; 0.78; 1"
+                dur="2.4s" repeatCount="indefinite"/>
+            </g>
+          </mask>
+        </defs>
+        <g mask="url(#pd-busy)" fill="currentColor">
+          <path d="M 336 200 L 572 200 L 572 332 Q 572 380 620 380 L 752 380 L 752 760 Q 752 824 688 824 L 336 824 Q 272 824 272 760 L 272 264 Q 272 200 336 200 Z"/>
+          <path d="M 600 200 L 752 352 L 624 352 Q 600 352 600 328 Z"/>
+        </g>
+      </svg>
+      <!-- statique (reduced motion) -->
+      <svg class="m-still" viewBox="0 0 1024 1024">
+        <defs>
+          <mask id="pd-still">
+            <rect width="1024" height="1024" fill="#fff"/>
+            <rect x="422" y="448" width="44" height="96" rx="22" fill="#000"/>
+            <rect x="558" y="448" width="44" height="96" rx="22" fill="#000"/>
+          </mask>
+        </defs>
+        <g mask="url(#pd-still)" fill="currentColor">
+          <path d="M 336 200 L 572 200 L 572 332 Q 572 380 620 380 L 752 380 L 752 760 Q 752 824 688 824 L 336 824 Q 272 824 272 760 L 272 264 Q 272 200 336 200 Z"/>
+          <path d="M 600 200 L 752 352 L 624 352 Q 600 352 600 328 Z"/>
+        </g>
+      </svg>
+      <!-- joie : chevrons ^^ -->
+      <svg class="m-joie" viewBox="0 0 1024 1024">
+        <defs>
+          <mask id="pd-joie">
+            <rect width="1024" height="1024" fill="#fff"/>
+            <g stroke="#000" stroke-width="30" stroke-linecap="round" stroke-linejoin="round" fill="none">
+              <path d="M 412 512 L 444 480 L 476 512"/>
+              <path d="M 548 512 L 580 480 L 612 512"/>
+            </g>
+          </mask>
+        </defs>
+        <g mask="url(#pd-joie)" fill="currentColor">
+          <path d="M 336 200 L 572 200 L 572 332 Q 572 380 620 380 L 752 380 L 752 760 Q 752 824 688 824 L 336 824 Q 272 824 272 760 L 272 264 Q 272 200 336 200 Z"/>
+          <path d="M 600 200 L 752 352 L 624 352 Q 600 352 600 328 Z"/>
+        </g>
+      </svg>
+      <!-- tristesse : paupières tombantes -->
+      <svg class="m-triste" viewBox="0 0 1024 1024">
+        <defs>
+          <mask id="pd-triste">
+            <rect width="1024" height="1024" fill="#fff"/>
+            <rect x="422" y="480" width="44" height="64" rx="22" fill="#000"/>
+            <rect x="558" y="480" width="44" height="64" rx="22" fill="#000"/>
+          </mask>
+        </defs>
+        <g mask="url(#pd-triste)" fill="currentColor">
+          <path d="M 336 200 L 572 200 L 572 332 Q 572 380 620 380 L 752 380 L 752 760 Q 752 824 688 824 L 336 824 Q 272 824 272 760 L 272 264 Q 272 200 336 200 Z"/>
+          <path d="M 600 200 L 752 352 L 624 352 Q 600 352 600 328 Z"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="col">
+      <div class="label" id="label"></div>
+      <div class="track" aria-hidden="true"></div>
+      <div class="filename" id="filename"></div>
+    </div>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const name = params.get('name') || '';
+    const lang = params.get('lang') || 'en';
+    document.documentElement.setAttribute('lang', lang);
+    document.getElementById('filename').textContent = name;
+    // Initial status; Rust overwrites it almost immediately with translated events.
+    document.getElementById('label').textContent = t(lang, 'progress.importing');
+
+    // Tauri sends events from Rust to update the UI.
+    if (window.__TAURI__) {
+      const { listen } = window.__TAURI__.event;
+      listen('progress:status', (e) => {
+        document.getElementById('label').textContent = e.payload || '';
+      });
+      listen('progress:done', () => {
+        document.body.classList.add('done');
+        document.getElementById('label').textContent = t(lang, 'progress.opening');
+        setTimeout(() => {
+          document.body.classList.add('closing');
+        }, 700);
+      });
+      listen('progress:error', (e) => {
+        document.body.classList.add('error');
+        document.getElementById('label').textContent = e.payload || t(lang, 'progress.error');
+        setTimeout(() => {
+          document.body.classList.add('closing');
+        }, 600);
+      });
+    }
+  </script>
+</body>
+</html>

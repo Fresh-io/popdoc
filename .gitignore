@@ -1,0 +1,13 @@
+.DS_Store
+.env
+*.log
+
+# Local-only specs / notes (never versioned)
+*.local.md
+
+# Tauri / Rust
+src-tauri/target/
+
+# Node
+node_modules/
+dist/

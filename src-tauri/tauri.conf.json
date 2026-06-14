@@ -1,0 +1,53 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Popdoc",
+  "version": "0.4.0",
+  "identifier": "io.popdoc.app",
+  "build": {
+    "frontendDist": "../src"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "macOSPrivateApi": true,
+    "windows": [],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["app", "dmg"],
+    "category": "public.app-category.productivity",
+    "shortDescription": "Open Office files in Google Docs",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "fileAssociations": [
+      {
+        "ext": ["docx", "doc", "odt", "rtf"],
+        "name": "Word Document",
+        "role": "Viewer"
+      },
+      {
+        "ext": ["xlsx", "xls", "csv", "tsv", "ods"],
+        "name": "Spreadsheet",
+        "role": "Viewer"
+      },
+      {
+        "ext": ["pptx", "ppt", "odp"],
+        "name": "Presentation",
+        "role": "Viewer"
+      }
+    ],
+    "macOS": {
+      "minimumSystemVersion": "10.15",
+      "signingIdentity": "Developer ID Application: Guillaume Cyr (4XGHVCQ5N6)",
+      "hardenedRuntime": true,
+      "entitlements": "entitlements.plist"
+    }
+  }
+}

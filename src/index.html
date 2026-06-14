@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Popdoc</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --brand: light-dark(#0E8C75, #2DD4BF);
+      --bg: light-dark(#FAFAF8, #14181D);
+      --ink: light-dark(#14181D, #F4F6F5);
+    }
+    @font-face {
+      font-family: 'Outfit';
+      src: url('assets/fonts/outfit-latin-wght-normal.woff2') format('woff2-variations');
+      font-weight: 100 900;
+      font-display: swap;
+    }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+    svg { width: 96px; height: 96px; color: var(--brand); }
+    .wm { font-weight: 600; font-size: 22px; letter-spacing: -0.01em; }
+  </style>
+</head>
+<body>
+  <!-- Fenêtre principale jamais affichée en usage normal (app transitoire). -->
+  <svg viewBox="0 0 1024 1024" aria-hidden="true">
+    <defs>
+      <mask id="pd-idle">
+        <rect width="1024" height="1024" fill="#fff"/>
+        <rect x="422" y="448" width="44" height="96" rx="22" fill="#000"/>
+        <rect x="558" y="448" width="44" height="96" rx="22" fill="#000"/>
+      </mask>
+    </defs>
+    <g mask="url(#pd-idle)" fill="currentColor">
+      <path d="M 336 200 L 572 200 L 572 332 Q 572 380 620 380 L 752 380 L 752 760 Q 752 824 688 824 L 336 824 Q 272 824 272 760 L 272 264 Q 272 200 336 200 Z"/>
+      <path d="M 600 200 L 752 352 L 624 352 Q 600 352 600 328 Z"/>
+    </g>
+  </svg>
+  <div class="wm">popdoc</div>
+</body>
+</html>
