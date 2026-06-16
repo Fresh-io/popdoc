@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Project Info.plist — MERGED INTO the Tauri-generated Info.plist before signing.
+
+  Why this file exists:
+    Tauri's `bundle.fileAssociations` only maps a handful of extensions to UTIs
+    (rtf -> public.rtf). For docx/xlsx/pptx/etc. it emits CFBundleTypeExtensions
+    with NO LSItemContentTypes. Modern macOS Launch Services ranks "Open with…"
+    candidates and the default handler almost entirely by UTI, so without the
+    canonical system UTIs Popdoc was never offered as a recommended app and could
+    not be set as default.
+
+  Tauri merges this file at the top-level-key granularity: any key present here
+  REPLACES the generated one. We therefore restate the FULL CFBundleDocumentTypes
+  (this overrides what fileAssociations produced on macOS) and add
+  UTImportedTypeDeclarations so the extension -> UTI mapping is known even on
+  machines without Microsoft Office / LibreOffice installed.
+
+  Keep `bundle.fileAssociations` in tauri.conf.json: it still drives Linux/Windows
+  associations; only the macOS CFBundleDocumentTypes is overridden here.
+-->
+<plist version="1.0">
+<dict>
+  <key>CFBundleDocumentTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleTypeName</key>
+      <string>Word Document</string>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+      <key>LSHandlerRank</key>
+      <string>Default</string>
+      <key>CFBundleTypeExtensions</key>
+      <array>
+        <string>docx</string>
+        <string>doc</string>
+        <string>odt</string>
+        <string>rtf</string>
+      </array>
+      <key>LSItemContentTypes</key>
+      <array>
+        <string>org.openxmlformats.wordprocessingml.document</string>
+        <string>com.microsoft.word.doc</string>
+        <string>org.oasis-open.opendocument.text</string>
+        <string>public.rtf</string>
+      </array>
+    </dict>
+    <dict>
+      <key>CFBundleTypeName</key>
+      <string>Spreadsheet</string>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+      <key>LSHandlerRank</key>
+      <string>Default</string>
+      <key>CFBundleTypeExtensions</key>
+      <array>
+        <string>xlsx</string>
+        <string>xls</string>
+        <string>csv</string>
+        <string>tsv</string>
+        <string>ods</string>
+      </array>
+      <key>LSItemContentTypes</key>
+      <array>
+        <string>org.openxmlformats.spreadsheetml.sheet</string>
+        <string>com.microsoft.excel.xls</string>
+        <string>public.comma-separated-values-text</string>
+        <string>public.tab-separated-values-text</string>
+        <string>org.oasis-open.opendocument.spreadsheet</string>
+      </array>
+    </dict>
+    <dict>
+      <key>CFBundleTypeName</key>
+      <string>Presentation</string>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+      <key>LSHandlerRank</key>
+      <string>Default</string>
+      <key>CFBundleTypeExtensions</key>
+      <array>
+        <string>pptx</string>
+        <string>ppt</string>
+        <string>odp</string>
+      </array>
+      <key>LSItemContentTypes</key>
+      <array>
+        <string>org.openxmlformats.presentationml.presentation</string>
+        <string>com.microsoft.powerpoint.ppt</string>
+        <string>org.oasis-open.opendocument.presentation</string>
+      </array>
+    </dict>
+  </array>
+
+  <!--
+    Import the non-system UTIs so this app declares the extension<->UTI mapping
+    itself. public.* UTIs (rtf, csv, tsv) are built into macOS and need no entry.
+  -->
+  <key>UTImportedTypeDeclarations</key>
+  <array>
+    <dict>
+      <key>UTTypeIdentifier</key>
+      <string>org.openxmlformats.wordprocessingml.document</string>
+      <key>UTTypeDescription</key>
+      <string>Microsoft Word (OOXML) document</string>
+      <key>UTTypeConformsTo</key>
+      <array>
+        <string>org.openxmlformats.openxml</string>
+        <string>public.data</string>
+      </array>
+      <key>UTTypeTagSpecification</key>
+      <dict>
+        <key>public.filename-extension</key>
+        <array><string>docx</string></array>
+        <key>public.mime-type</key>
+        <array><string>application/vnd.openxmlformats-officedocument.wordprocessingml.document</string></array>
+      </dict>
+    </dict>
+    <dict>
+      <key>UTTypeIdentifier</key>
+      <string>com.microsoft.word.doc</string>
+      <key>UTTypeDescription</key>
+      <string>Microsoft Word 97-2004 document</string>
+      <key>UTTypeConformsTo</key>
+      <array><string>public.data</string></array>
+      <key>UTTypeTagSpecification</key>
+      <dict>
+        <key>public.filename-extension</key>
+        <array><string>doc</string></array>
+        <key>public.mime-type</key>
+        <array><string>application/msword</string></array>
+      </dict>
+    </dict>
+    <dict>
+      <key>UTTypeIdentifier</key>
+      <string>org.oasis-open.opendocument.text</string>
+      <key>UTTypeDescription</key>
+      <string>OpenDocument text</string>
+      <key>UTTypeConformsTo</key>
+      <array><string>public.data</string></array>
+      <key>UTTypeTagSpecification</key>
+      <dict>
+        <key>public.filename-extension</key>
+        <array><string>odt</string></array>
+        <key>public.mime-type</key>
+        <array><string>application/vnd.oasis.opendocument.text</string></array>
+      </dict>
+    </dict>
+    <dict>
+      <key>UTTypeIdentifier</key>
+      <string>org.openxmlformats.spreadsheetml.sheet</string>
+      <key>UTTypeDescription</key>
+      <string>Microsoft Excel (OOXML) spreadsheet</string>
+      <key>UTTypeConformsTo</key>
+      <array>
+        <string>org.openxmlformats.openxml</string>
+        <string>public.data</string>
+      </array>
+      <key>UTTypeTagSpecification</key>
+      <dict>
+        <key>public.filename-extension</key>
+        <array><string>xlsx</string></array>
+        <key>public.mime-type</key>
+        <array><string>application/vnd.openxmlformats-officedocument.spreadsheetml.sheet</string></array>
+      </dict>
+    </dict>
+    <dict>
+      <key>UTTypeIdentifier</key>
+      <string>com.microsoft.excel.xls</string>
+      <key>UTTypeDescription</key>
+      <string>Microsoft Excel 97-2004 spreadsheet</string>
+      <key>UTTypeConformsTo</key>
+      <array><string>public.data</string></array>
+      <key>UTTypeTagSpecification</key>
+      <dict>
+        <key>public.filename-extension</key>
+        <array><string>xls</string></array>
+        <key>public.mime-type</key>
+        <array><string>application/vnd.ms-excel</string></array>
+      </dict>
+    </dict>
+    <dict>
+      <key>UTTypeIdentifier</key>
+      <string>org.oasis-open.opendocument.spreadsheet</string>
+      <key>UTTypeDescription</key>
+      <string>OpenDocument spreadsheet</string>
+      <key>UTTypeConformsTo</key>
+      <array><string>public.data</string></array>
+      <key>UTTypeTagSpecification</key>
+      <dict>
+        <key>public.filename-extension</key>
+        <array><string>ods</string></array>
+        <key>public.mime-type</key>
+        <array><string>application/vnd.oasis.opendocument.spreadsheet</string></array>
+      </dict>
+    </dict>
+    <dict>
+      <key>UTTypeIdentifier</key>
+      <string>org.openxmlformats.presentationml.presentation</string>
+      <key>UTTypeDescription</key>
+      <string>Microsoft PowerPoint (OOXML) presentation</string>
+      <key>UTTypeConformsTo</key>
+      <array>
+        <string>org.openxmlformats.openxml</string>
+        <string>public.data</string>
+      </array>
+      <key>UTTypeTagSpecification</key>
+      <dict>
+        <key>public.filename-extension</key>
+        <array><string>pptx</string></array>
+        <key>public.mime-type</key>
+        <array><string>application/vnd.openxmlformats-officedocument.presentationml.presentation</string></array>
+      </dict>
+    </dict>
+    <dict>
+      <key>UTTypeIdentifier</key>
+      <string>com.microsoft.powerpoint.ppt</string>
+      <key>UTTypeDescription</key>
+      <string>Microsoft PowerPoint 97-2004 presentation</string>
+      <key>UTTypeConformsTo</key>
+      <array><string>public.data</string></array>
+      <key>UTTypeTagSpecification</key>
+      <dict>
+        <key>public.filename-extension</key>
+        <array><string>ppt</string></array>
+        <key>public.mime-type</key>
+        <array><string>application/vnd.ms-powerpoint</string></array>
+      </dict>
+    </dict>
+    <dict>
+      <key>UTTypeIdentifier</key>
+      <string>org.oasis-open.opendocument.presentation</string>
+      <key>UTTypeDescription</key>
+      <string>OpenDocument presentation</string>
+      <key>UTTypeConformsTo</key>
+      <array><string>public.data</string></array>
+      <key>UTTypeTagSpecification</key>
+      <dict>
+        <key>public.filename-extension</key>
+        <array><string>odp</string></array>
+        <key>public.mime-type</key>
+        <array><string>application/vnd.oasis.opendocument.presentation</string></array>
+      </dict>
+    </dict>
+  </array>
+</dict>
+</plist>
