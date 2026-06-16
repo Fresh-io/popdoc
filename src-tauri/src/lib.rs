@@ -500,6 +500,20 @@ pub fn run() {
             });
             if processing || !q_empty {
                 api.prevent_exit();
+            } else if state.pending_update.lock().unwrap().is_some() {
+                // A downloaded update is parked. ExitRequested is the path that
+                // actually fires when the user closes the last window (Settings)
+                // or hits Cmd-Q, so this is where we must apply it — otherwise
+                // the process dies before the delayed window-Destroyed handler
+                // gets a chance to install. Hold the exit, install, then quit.
+                // install_pending take()s the parked update so this is safe even
+                // if the Destroyed handler also runs.
+                api.prevent_exit();
+                let h = app_handle.clone();
+                tauri::async_runtime::spawn(async move {
+                    updater::install_pending(&h).await;
+                    h.exit(0);
+                });
             }
         }
         RunEvent::Opened { urls } => {

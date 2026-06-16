@@ -1,6 +1,6 @@
 [package]
 name = "popdoc"
-version = "0.6.0"
+version = "0.7.0"
 description = "Double-click any Office file to open it in Google Docs"
 authors = ["Guillaume Cyr <guillaume@getpopdoc.com>"]
 edition = "2021"
